@@ -15,11 +15,11 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Pull Docker image
-      run: docker pull mysterysd/wzmlx:latest
+      run: docker pull vigabots/vigazm:latest
 
     - name: Create container and extract code
       run: |
-        docker create --name temp_container mysterysd/wzmlx:latest
+        docker create --name temp_container vigabots/vigazm:latest
         docker cp temp_container:/usr/src/app ./source_code
         docker rm -f temp_container
 

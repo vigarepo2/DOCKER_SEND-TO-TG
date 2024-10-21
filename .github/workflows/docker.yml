@@ -1,0 +1,38 @@
+name: Send Code from Docker to Telegram
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  send-code:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Pull Docker image
+      run: docker pull mysterysd/wzmlx:latest
+
+    - name: Create container and extract code
+      run: |
+        docker create --name temp_container mysterysd/wzmlx:latest
+        docker cp temp_container:/usr/src/app ./source_code
+        docker rm -f temp_container
+
+    - name: Zip the code (excluding unnecessary directories)
+      run: |
+        cd ./source_code
+        zip -r code.zip . -x "venv/*" "usr/local/lib/python*"
+
+    - name: Send code to Telegram
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        CHAT_ID: ${{ secrets.CHAT_ID }}
+      run: |
+        curl -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendDocument" \
+        -F chat_id=${{ secrets.CHAT_ID }} \
+        -F document=@code.zip

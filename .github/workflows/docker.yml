@@ -26,7 +26,10 @@ jobs:
     - name: Zip the code (excluding unnecessary directories)
       run: |
         cd ./source_code
-        zip -r code.zip . -x "venv/*" "usr/local/lib/python*"
+        zip -r ../code.zip . -x "venv/*" "usr/local/lib/python*"
+
+    - name: Check if zip file is created
+      run: ls -l code.zip
 
     - name: Send code to Telegram
       env:
